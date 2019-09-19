@@ -5,23 +5,46 @@
  */
 package entities;
 
-import java.util.Date;
-import javax.persistence.Temporal;
-
-/**
- *
- * @author sinanjasar
- */
 public class PersonDTO {
-    private String firstName,lastName,phone;
-    private Date created,lastEdited;
-
-    public PersonDTO(Person p) {
-        this.firstName = p.getFirstName();
-        this.lastName = p.getLastName();
-        this.phone = p.getPhone();
-        this.created = p.getCreated();
-        this.lastEdited = p.getLastEdited();
-    }
+    private int id;
+    private String fName;
+    private String lName;
+    private String phone;
     
+    public PersonDTO(Person p) {
+        this.fName = p.getFirstName();
+        this.lName = p.getLastName();
+        this.phone = p.getPhone();
+        this.id = p.getId();
+    }
+    public PersonDTO(String fn,String ln, String phone) {
+        this.fName = fn;
+        this.lName = ln;
+        this.phone = phone;        
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PersonDTO other = (PersonDTO) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
 }
+

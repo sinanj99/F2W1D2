@@ -18,7 +18,7 @@ public interface IPersonFacade {
 
     public PersonDTO getPerson(int id) throws PersonNotFoundException;
 
-    public List<PersonDTO> getAllPersons();
+    public List<Person> getAllPersons();
 
     public Person editPerson(Person p) throws PersonNotFoundException;
 

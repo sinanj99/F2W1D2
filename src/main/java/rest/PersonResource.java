@@ -3,7 +3,7 @@ package rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import entities.Person;
-import entities.PersonDTO;
+import entities.PersonsDTO;
 import exceptions.PersonNotFoundException;
 import utils.EMF_Creator;
 import facades.PersonFacade;
@@ -40,27 +40,27 @@ public class PersonResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({MediaType.APPLICATION_JSON})
-    public void addPerson(String json) {
+    public String addPerson(String json) {
         Person person = GSON.fromJson(json, Person.class);
-        FACADE.addPerson(person);
+        return GSON.toJson(FACADE.addPerson(person));
     }
 
     @DELETE
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({MediaType.APPLICATION_JSON})
-    public void deletePerson(@PathParam("id") int id) throws PersonNotFoundException {
-        FACADE.deletePerson(id);
+    public String deletePerson(@PathParam("id") int id) throws PersonNotFoundException {
+        return GSON.toJson(FACADE.deletePerson(id));
     }
 
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({MediaType.APPLICATION_JSON})
-    public void editPerson(@PathParam("id") int id, String json) {
+    public String editPerson(@PathParam("id") int id, String json) {
         Person person = GSON.fromJson(json, Person.class);
         person.setId(id);
-        FACADE.editPerson(person);
+        return GSON.toJson(FACADE.editPerson(person));
     }
 
     @Path("/{id}")
@@ -74,14 +74,14 @@ public class PersonResource {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public String getAllPersons() {
-        return GSON.toJson(FACADE.getAllPersons());
+        return GSON.toJson(new PersonsDTO(FACADE.getAllPersons()));
     }
 
     @Path("count")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public String getRenameMeCount() {
-        long count = FACADE.getRenameMeCount();
+    public String getPersonCount() {
+        long count = FACADE.getPersonCount();
         //System.out.println("--------------->"+count);
         return "{\"count\":" + count + "}";  //Done manually so no need for a DTO
     }

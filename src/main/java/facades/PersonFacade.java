@@ -40,11 +40,11 @@ public class PersonFacade implements IPersonFacade {
     }
 
     //TODO Remove/Change this before use
-    public long getRenameMeCount() {
+    public long getPersonCount() {
         EntityManager em = emf.createEntityManager();
         try {
-            long renameMeCount = (long) em.createQuery("SELECT COUNT(r) FROM RenameMe r").getSingleResult();
-            return renameMeCount;
+            long personCount = (long) em.createQuery("SELECT COUNT(p) FROM Person p").getSingleResult();
+            return personCount;
         } finally {
             em.close();
         }
@@ -57,6 +57,7 @@ public class PersonFacade implements IPersonFacade {
         try {
             em.getTransaction().begin();
             em.persist(p);
+            em.flush();
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -67,20 +68,20 @@ public class PersonFacade implements IPersonFacade {
     @Override
     public Person deletePerson(int id) throws PersonNotFoundException {
         EntityManager em = emf.createEntityManager();
+        Person person;
         TypedQuery<Person> query;
         try {
             em.getTransaction().begin();
-            query = em.createQuery("DELETE FROM Person p WHERE p.id = :id", Person.class);
-            query.setParameter("id", id);
-            int updated = query.executeUpdate();
-            if(updated == 0) {
+            person = em.find(Person.class, id);
+            if(person == null) {
                 throw new PersonNotFoundException("Could not delete, provided id does not exist");
             }
+            em.remove(person);
             em.getTransaction().commit();
         } finally {
             em.close();
         }
-        return null;
+        return person;
     }
 
     @Override
@@ -96,10 +97,10 @@ public class PersonFacade implements IPersonFacade {
     }
 
     @Override
-    public List<PersonDTO> getAllPersons() {
+    public List<Person> getAllPersons() {
         EntityManager em = emf.createEntityManager();
         try {
-            return em.createQuery("SELECT p FROM Person p", PersonDTO.class).getResultList();
+            return em.createQuery("SELECT p FROM Person p", Person.class).getResultList();
         } finally {
             em.close();
         }
@@ -108,21 +109,14 @@ public class PersonFacade implements IPersonFacade {
     @Override
     public Person editPerson(Person p) {
         EntityManager em = emf.createEntityManager();
-        TypedQuery<Person> query;
         try {
             em.getTransaction().begin();
-            query = em.createQuery("UPDATE Person p SET p.phone = :phone, "
-                    + "p.firstName = :firstName, p.lastName = :lastName WHERE p.id = :id", Person.class);
-            query.setParameter("id", p.getId());
-            query.setParameter("phone", p.getPhone());
-            query.setParameter("firstName", p.getFirstName());
-            query.setParameter("lastName", p.getLastName());
-            query.executeUpdate();
+            em.merge(p);
             em.getTransaction().commit();
         } finally {
             em.close();
         }
-        return null;
+        return p;
     }
 
 }
